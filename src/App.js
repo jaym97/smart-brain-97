@@ -10,6 +10,7 @@ import Particles from 'react-particles-js';
 
 import './App.css';
 
+// Particle configuration for the background
 const particleOptions = {
     particles: {
         polygon: {
@@ -25,6 +26,7 @@ const particleOptions = {
       }
 }
 
+// Declaring and assigning the initial state of the app
 const initialState = {
   input: '',
   imageURL: '',
@@ -40,12 +42,18 @@ const initialState = {
   }
 };
 
+
 class App extends Component {
   constructor() {
     super();
+    // Assigning the app's state to the initial state declared above
     this.state = initialState;
   }
 
+  /**
+  * @description Changes the state of the user object with properties fetched from the data object
+  * @param {object} data - database object
+  */
   loadUser = data => {
     this.setState({user: {
       id: data.id,
@@ -56,13 +64,21 @@ class App extends Component {
     }});
   }
 
+  /**
+  * @description Changes state of the userIsSignedIn property or resets all on route change
+  * @param 'String' route
+  */
   onRouteChange = route => {
     route === 'signout' ? this.setState(initialState)
     : route === 'home' ? this.setState({userIsSignedIn: true})
-    : console.log('undefined');
+    : console.log('undefined route');
     this.setState({route: route});
   }
 
+  /**
+  * @description Calculates bounding points of the face in the image using data received from the API and returns them
+  * @param {object} data
+  */
   workOutFacePosition = data => {
     const image = document.getElementById('input-image');
     const faceInImage = data.outputs[0].data.regions[0].region_info.bounding_box;
@@ -85,6 +101,9 @@ class App extends Component {
     this.setState({input: event.target.value})
   }
 
+  /**
+  * @description Handles asynchronous fetches to the backend when the user submits an image
+  */
   onImageSubmit = () => {
     this.setState({imageURL: this.state.input});
     fetch('https://peaceful-stream-83121.herokuapp.com/imageURL', {
@@ -94,6 +113,7 @@ class App extends Component {
     })
     .then(response => response.json())
     .then(response => {
+      // Checks if there's a response to the initial fetch and then sends the image to be handled by the backend
       if (response) {
         fetch('https://peaceful-stream-83121.herokuapp.com/image', {
           method: 'put',
@@ -102,16 +122,19 @@ class App extends Component {
         })
         .then(response => response.json())
         .then(count => {
+          // Increasing the number of entry submissions by the user
           this.setState(Object.assign(this.state.user, { entries: count}))
         })
         .catch(console.log);
       }
+      // Displaying the bounding box on the face in the image using the returned values from the callback function
       this.displayFaceBoundingBox(this.workOutFacePosition(response))
     })
     .catch(err => console.log(err));
   }
 
   render() {
+    // Destructuring the properties in the state object
     const { imageURL, box, route, userIsSignedIn} = this.state;
 
     return (
