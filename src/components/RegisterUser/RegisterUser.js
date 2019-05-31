@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import './RegisterUser.css';
 
 class RegisterUser extends Component {
     constructor(props) {
@@ -6,7 +7,9 @@ class RegisterUser extends Component {
         this.state = {
             name: '',
             email: '',
-            password: ''
+            password: '',
+            registerCard: {},
+            errMsg: {}
         }
     }
 
@@ -22,6 +25,9 @@ class RegisterUser extends Component {
         this.setState({password: event.target.value})
     }
 
+    /**
+    * @description Posts a request with registration info to the server
+    */
     onRegister = () => {
         fetch('https://peaceful-stream-83121.herokuapp.com/register', {
             method: 'post',
@@ -35,20 +41,46 @@ class RegisterUser extends Component {
         .then(response => response.json())
         .then(user => {
             if (user.id) {
-                this.props.loadUser(user);
-                this.props.onRouteChange('home');
+                if (!this.state.email.includes('@') || !this.state.email.includes('.com') || this.state.password.length < 6){
+                    this.setState({
+                        registerCard: document.getElementById('register-card'),
+                        errMsg: document.getElementById('err-msg')
+                    });
+                    debugger
+                    this.state.errMsg.textContent = 'You have entered an invalid email format and/or wrong password length';
+                    this.state.errMsg.classList.remove('invisible');
+                    this.state.errMsg.classList.add('visible');
+                    this.state.registerCard.classList.add('wrongInfoAnimation');
+                    // Removes the animation class just after the animation is completed so it can be added again
+                    setTimeout(() => this.state.registerCard.classList.remove('wrongInfoAnimation'), 1300);
+                } else {
+                    this.props.loadUser(user);
+                    this.props.onRouteChange('home');
+                }
+
+            } else if (!this.state.email || !this.state.password || !this.state.name){
+                this.setState({
+                    registerCard: document.getElementById('register-card'),
+                    errMsg: document.getElementById('err-msg')
+                });
+                this.state.errMsg.classList.remove('invisible');
+                this.state.errMsg.classList.add('visible');
+                this.state.registerCard.classList.add('wrongInfoAnimation');
+                // Removes the animation class just after the animation is completed so it can be added again
+                setTimeout(() => this.state.registerCard.classList.remove('wrongInfoAnimation'), 1300);
             }
         })
-      }
+    }
 
     render() {
         return(
             <div>
-                <article className="br3 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center">
+                <article className="br3 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center" id="register-card">
                     <main className="pa4 black-80">
                         <div className="measure center">
                             <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
                                 <legend className="f1 fw6 ph0 mh0">Create an Account</legend>
+                                <label className="fw6 lh-copy f6 invisible" id="err-msg">Please fill out all fields</label>
                                 <div className="mt3">
                                     <label className="db fw6 lh-copy f6" htmlFor="name">Name</label>
                                     <input
@@ -70,7 +102,7 @@ class RegisterUser extends Component {
                                     />
                                 </div>
                                 <div className="mv3">
-                                    <label className="db fw6 lh-copy f6" htmlFor="password">Password</label>
+                                    <label className="db fw6 lh-copy f6" htmlFor="password">Password (should be at least 6 characters long)</label>
                                     <input
                                         className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
                                         type="password"

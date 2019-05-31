@@ -2,7 +2,7 @@
 Detect faces in photos using the Clarifai face-detector API
 
 ## How to Install
-To install this repo locally run `git clone [repo-URL](https://github.com/jaym97/smart-brain-97.git)`
+To install this repo locally run 'git clone [repo-URL](https://github.com/jaym97/smart-brain-97.git)'
 
 ## Available Scripts
 

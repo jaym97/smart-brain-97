@@ -41,7 +41,7 @@ class SignIn extends Component {
             })
         })
         .then(response => response.json())
-        // Checks if the fields have information entered correctly and handles them accordingly
+        // Checks if the fields have information entered and handles them accordingly
         .then(user => {
             if (user.id) {
                 this.props.loadUser(user);
@@ -53,8 +53,8 @@ class SignIn extends Component {
                     errMsg: document.getElementById('err-msg')
                 });
                 this.state.signInCard.classList.add('wrongInfoAnimation');
-                this.state.errMsg.classList.toggle('invisible');
-                this.state.errMsg.classList.toggle('visible');
+                this.state.errMsg.classList.remove('invisible');
+                this.state.errMsg.classList.add('visible');
                 // Removes the animation class just after the animation is completed so it can be added again
                 setTimeout(() => this.state.signInCard.classList.remove('wrongInfoAnimation'), 1300);
             }
@@ -69,7 +69,7 @@ class SignIn extends Component {
                         <div className="measure center">
                             <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
                                 <legend className="f1 fw6 ph0 mh0">Sign In</legend>
-                                <label className="fw6 lh-copy f6 invisible" id="err-msg">You have not entered a username and/or password</label>
+                                <label className="fw6 lh-copy f6 invisible" id="err-msg">You have entered an invalid username or password</label>
                                 <div className="mt3">
                                     <label className="db fw6 lh-copy f6" htmlFor="email-address">Email</label>
                                     <input
